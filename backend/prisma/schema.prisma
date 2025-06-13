@@ -15,16 +15,16 @@ datasource db {
 
 model Peserta {
   id           Int      @id @default(autoincrement())
-  nama         String   
-  komting      String   @map("komting")
+  nama         String
   email        String
   nowa         String
-  kelas        String
+  kelasId      Int      @map("class_id")
   status       PesertaStatus  @default(PENDING)
   createAt     DateTime @default(now())
   updateAt     DateTime?
   cabangId     Int      @map("cabang_id")
   cabang       Cabang   @relation(fields: [cabangId], references: [id])
+  kelas        Kelas    @relation(fields: [kelasId], references: [id])
 
   @@map("peserta")
 }
@@ -46,6 +46,15 @@ model Admin {
   createdAt DateTime @default(now())
 
   @@map("admin")
+}
+
+model Kelas {
+  id        Int     @id @default(autoincrement())
+  nama      String  @unique
+  komting   String
+  peserta   Peserta[]
+
+  @@map("kelas")
 }
 
 enum PesertaStatus {

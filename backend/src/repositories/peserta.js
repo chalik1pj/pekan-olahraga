@@ -1,12 +1,12 @@
-import { prisma } from '../utils/database.js'
-import { PesertaStatus } from '@prisma/client'
+import { prisma } from "../utils/database.js"
+import { PesertaStatus } from "@prisma/client"
 
 export async function createRegistrationPeserta(data) {
-  return await prisma.peserta.createMany({ data });
+  return await prisma.peserta.createMany({ data })
 }
 
 export async function countAllRegistration() {
-  return await prisma.peserta.count();
+  return await prisma.peserta.count()
 }
 
 export async function countApprovedRegistration() {
@@ -14,7 +14,7 @@ export async function countApprovedRegistration() {
     where: {
       status: PesertaStatus.APPROVED,
     },
-  });
+  })
 }
 
 export async function getApprovedParticipant() {
@@ -24,8 +24,9 @@ export async function getApprovedParticipant() {
     },
     include: {
       cabang: true,
+      kelas: true,
     },
-  });
+  })
 }
 
 export async function getPendingRegistration() {
@@ -35,15 +36,16 @@ export async function getPendingRegistration() {
     },
     include: {
       cabang: true,
+      kelas: true,
     },
-  });
+  })
 }
 
 export async function updatePeserta(id, status) {
   return await prisma.peserta.update({
     data: { status },
     where: { id },
-  });
+  })
 }
 
 export async function getById(id) {
@@ -53,8 +55,9 @@ export async function getById(id) {
     },
     include: {
       cabang: true,
+      kelas: true,
     },
-  });
+  })
 }
 
 export async function findReRegisteredParticipant() {
@@ -67,8 +70,9 @@ export async function findReRegisteredParticipant() {
     },
     include: {
       cabang: true,
+      kelas: true,
     },
-  });
+  })
 }
 
 export async function countReRegisteredParticipant() {
@@ -79,5 +83,5 @@ export async function countReRegisteredParticipant() {
         not: null,
       },
     },
-  });
+  })
 }

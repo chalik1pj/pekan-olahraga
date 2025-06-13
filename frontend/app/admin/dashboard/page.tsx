@@ -21,7 +21,11 @@ type Participant = {
   nama: string;
   email: string;
   nowa: string;
-  kelas: string;
+  kelas: {
+    id: number;
+    nama: string;
+    komting: string;
+  };
   status: "PENDING" | "APPROVED" | "REJECT";
   cabang: {
     id: number;
@@ -221,7 +225,7 @@ export default function AdminDashboardPage() {
     (reg) =>
       reg.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.kelas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.kelas.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reg.cabang.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -229,7 +233,7 @@ export default function AdminDashboardPage() {
     (reg) =>
       reg.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.kelas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.kelas.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reg.cabang.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -381,7 +385,7 @@ export default function AdminDashboardPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {registration.kelas}
+                            {registration.kelas?.nama || "Unknown"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {registration.cabang.nama}
@@ -472,7 +476,7 @@ export default function AdminDashboardPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {registration.kelas}
+                            {registration.kelas?.nama || "Unknown"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {registration.cabang.nama}

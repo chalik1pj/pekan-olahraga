@@ -24,10 +24,9 @@ import { useRouter } from "next/navigation";
 // Define the form schema with Zod
 const participantSchema = z.object({
   nama: z.string().min(3, "Nama harus minimal 3 karakter"),
-  komting: z.string().min(3, "Nama ketua kelas diperlukan"),
   email: z.string().email("Alamat email tidak valid"),
   nowa: z.string().min(10, "Nomor telepon harus minimal 10 digit"),
-  kelas: z.string().min(2, "Nama kelas diperlukan"),
+  kelasId: z.number().min(1, "Kelas harus dipilih"),
 });
 
 const formSchema = z.object({
@@ -65,6 +64,10 @@ export default function RegisterPage() {
     emailsSent?: number;
     totalEmails?: number;
   } | null>(null);
+  const [classes, setClasses] = useState<
+    { id: number; nama: string; komting: string }[]
+  >([]);
+  const [loadingClasses, setLoadingClasses] = useState(false);
 
   const {
     register,
@@ -80,7 +83,7 @@ export default function RegisterPage() {
       nama: "",
       participant: 1,
       harga: 0,
-      pesertaGroup: [{ nama: "", komting: "", email: "", nowa: "", kelas: "" }],
+      pesertaGroup: [{ nama: "", email: "", nowa: "", kelasId: 0 }],
     },
   });
 
@@ -91,26 +94,37 @@ export default function RegisterPage() {
 
   const selectedSport = watch("nama");
 
-  // Fetch sports categories on component mount
+  // Fetch sports categories and classes on component mount
   useEffect(() => {
-    const fetchSports = async () => {
+    const fetchData = async () => {
       setLoading(true);
+      setLoadingClasses(true);
       try {
-        const response = await axios.get(
+        // Fetch sports
+        const sportsResponse = await axios.get(
           "http://localhost:5000/api/admin/cabang-olahraga"
         );
-        if (response.data.status === "success") {
-          setSports(response.data.data.competitions);
+        if (sportsResponse.data.status === "success") {
+          setSports(sportsResponse.data.data.competitions);
+        }
+
+        // Fetch classes
+        const classesResponse = await axios.get(
+          "http://localhost:5000/api/pekan-olahraga/class"
+        );
+        if (classesResponse.data.status === "success") {
+          setClasses(classesResponse.data.data.competitions);
         }
       } catch (error) {
-        console.error("Error fetching sports:", error);
-        toast.error("Gagal memuat kategori olahraga");
+        console.error("Error fetching data:", error);
+        toast.error("Gagal memuat data");
       } finally {
         setLoading(false);
+        setLoadingClasses(false);
       }
     };
 
-    fetchSports();
+    fetchData();
   }, []);
 
   // Update price when sport changes
@@ -160,11 +174,7 @@ export default function RegisterPage() {
           ? ` ${response.data.data.emailsSent}/${response.data.data.totalEmails} email terkirim.`
           : "";
 
-        toast.success(
-          `${
-            response.data.message || "Pendaftaran berhasil!"
-          }${emailInfo} Periksa email Anda untuk konfirmasi.`
-        );
+        toast.success("Pendaftaran berhasil!! Mohon tunggu sebentar.");
 
         // Store registration details in session storage
         const registrationDetails = {
@@ -195,9 +205,7 @@ export default function RegisterPage() {
           nama: "",
           participant: 1,
           harga: 0,
-          pesertaGroup: [
-            { nama: "", komting: "", email: "", nowa: "", kelas: "" },
-          ],
+          pesertaGroup: [{ nama: "", email: "", nowa: "", kelasId: 0 }],
         });
       } else {
         // Handle non-success response
@@ -384,19 +392,40 @@ export default function RegisterPage() {
                           )}
                         </div>
 
-                        <div>
+                        <div className="md:col-span-2">
                           <label className="block text-sm font-medium mb-1 font-sans">
-                            Ketua Kelas (Komting)
+                            Kelas dan Ketua Kelas
                           </label>
                           <input
-                            type="text"
+                            list={`kelas-options-${index}`}
                             className="input-field font-sans"
-                            placeholder="Masukkan nama ketua kelas"
-                            {...register(`pesertaGroup.${index}.komting`)}
+                            placeholder="Ketik untuk mencari kelas..."
+                            onChange={(e) => {
+                              const selectedClass = classes.find(
+                                (c) =>
+                                  `${c.nama} - ${c.komting}` === e.target.value
+                              );
+                              if (selectedClass) {
+                                setValue(
+                                  `pesertaGroup.${index}.kelasId`,
+                                  selectedClass.id
+                                );
+                              }
+                            }}
                           />
-                          {errors.pesertaGroup?.[index]?.komting && (
+                          <datalist id={`kelas-options-${index}`}>
+                            {classes.map((kelas) => (
+                              <option
+                                key={kelas.id}
+                                value={`${kelas.nama} - ${kelas.komting}`}
+                              >
+                                {kelas.nama} - {kelas.komting}
+                              </option>
+                            ))}
+                          </datalist>
+                          {errors.pesertaGroup?.[index]?.kelasId && (
                             <p className="text-red-500 text-sm mt-1 font-sans">
-                              {errors.pesertaGroup[index]?.komting?.message}
+                              {errors.pesertaGroup[index]?.kelasId?.message}
                             </p>
                           )}
                         </div>
@@ -431,23 +460,6 @@ export default function RegisterPage() {
                           {errors.pesertaGroup?.[index]?.nowa && (
                             <p className="text-red-500 text-sm mt-1 font-sans">
                               {errors.pesertaGroup[index]?.nowa?.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-1 font-sans">
-                            Kelas
-                          </label>
-                          <input
-                            type="text"
-                            className="input-field font-sans"
-                            placeholder="Masukkan kelas anda (Cth: 23S04)"
-                            {...register(`pesertaGroup.${index}.kelas`)}
-                          />
-                          {errors.pesertaGroup?.[index]?.kelas && (
-                            <p className="text-red-500 text-sm mt-1 font-sans">
-                              {errors.pesertaGroup[index]?.kelas?.message}
                             </p>
                           )}
                         </div>

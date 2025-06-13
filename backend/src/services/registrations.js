@@ -53,10 +53,9 @@ export async function registProcess(data) {
 
         participantData = data.pesertaGroup.map((p) => ({
           nama: p.nama,
-          komting: p.komting,
           email: p.email,
           nowa: p.nowa,
-          kelas: p.kelas,
+          kelasId: p.kelasId,
           cabangId: competition.id,
         }))
 
@@ -71,16 +70,28 @@ export async function registProcess(data) {
         }
       },
       {
-        timeout: 10000,
+        timeout: 5000,
       },
     )
 
     if (result.success && participantData.length > 0) {
       console.log("Transaction successful, now sending emails to participants...")
 
+      // Fetch class information for email notifications
+      const classIds = [...new Set(participantData.map((p) => p.kelasId))]
+      const classesInfo = await Promise.all(
+        classIds.map(async (kelasId) => {
+          const kelas = await prisma.kelas.findUnique({
+            where: { id: kelasId },
+          })
+          return kelas
+        }),
+      )
+
       const emailPromises = participantData.map(async (p) => {
         try {
-          await sendRegistNotify(p.email, p.nama, p.kelas, p.komting)
+          const kelasInfo = classesInfo.find((k) => k.id === p.kelasId)
+          await sendRegistNotify(p.email, p.nama, kelasInfo?.nama || "", kelasInfo?.komting || "")
           console.log(`✅ Email notification sent to ${p.email}`)
           return { email: p.email, success: true }
         } catch (error) {
@@ -167,7 +178,8 @@ export async function getRegistByIdService(id) {
       nama: regist.nama,
       email: regist.email,
       nowa: regist.nowa,
-      kelas: regist.kelas,
+      kelas: regist.kelas?.nama || "Unknown",
+      komting: regist.kelas?.komting || "Unknown",
       status: regist.status,
       cabang: regist.cabang,
     }

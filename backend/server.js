@@ -4,6 +4,7 @@ import inert from '@hapi/inert';
 import { adminRoute } from './src/routes/adminAuth.js';
 import { competitionsRoute } from './src/routes/competitions.js';
 import { registerRoute } from './src/routes/registrations.js';
+import { classRoutes } from './src/routes/class.js';
 dotenv.config();
 
 const init = async () => {
@@ -32,8 +33,9 @@ const init = async () => {
   const admin = await adminRoute();
   const competitions = await competitionsRoute();
   const register = await registerRoute();
+  const kelas = await classRoutes();
 
-  server.route([...admin, ...competitions, ...register])
+  server.route([...admin, ...competitions, ...register, ...kelas])
   await server.start()
   console.log(`Server berjalan pada: ${server.info.uri}`)
 }

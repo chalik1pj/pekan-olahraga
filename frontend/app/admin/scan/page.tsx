@@ -24,7 +24,11 @@ type ScanResult = {
     nama: string;
     email: string;
     nowa: string;
-    kelas: string;
+    kelas: {
+      id: number;
+      nama: string;
+      komting: string;
+    };
     status: string;
     updateAt: string | null;
     cabang: {
@@ -255,7 +259,7 @@ export default function ScanQRPage() {
                   <div className="bg-background rounded-lg p-4">
                     <p className="text-sm text-text-secondary mb-1">Kelas</p>
                     <p className="font-semibold">
-                      {scanResult.participant.kelas}
+                      {scanResult.participant.kelas?.nama || "Unknown"}
                     </p>
                   </div>
 
@@ -318,6 +322,15 @@ export default function ScanQRPage() {
                           scanResult.participant.updateAt
                         ).toLocaleString()
                       : "Baru saja selesai"}
+                  </p>
+                </div>
+
+                <div className="bg-background rounded-lg p-4">
+                  <p className="text-sm text-text-secondary mb-1">
+                    Ketua Kelas
+                  </p>
+                  <p className="font-semibold">
+                    {scanResult.participant.kelas?.komting || "Unknown"}
                   </p>
                 </div>
               </div>

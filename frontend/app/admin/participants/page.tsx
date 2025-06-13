@@ -22,7 +22,11 @@ type Participant = {
   nama: string;
   email: string;
   nowa: string;
-  kelas: string;
+  kelas: {
+    id: number;
+    nama: string;
+    komting: string;
+  };
   status: "PENDING" | "APPROVED" | "REJECT";
   createAt: string;
   updateAt: string | null;
@@ -139,7 +143,7 @@ export default function ParticipantsPage() {
           `"${p.nama}"`,
           `"${p.email}"`,
           `"${p.nowa}"`,
-          `"${p.kelas}"`,
+          `"${p.kelas?.nama || "Unknown"}"`,
           `"${p.cabang.nama}"`,
           p.status,
           new Date(p.createAt).toLocaleDateString(),
@@ -169,7 +173,9 @@ export default function ParticipantsPage() {
       const matchesSearch =
         p.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.kelas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.kelas?.nama || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         p.cabang.nama.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Apply status filter
@@ -315,7 +321,7 @@ export default function ParticipantsPage() {
                       <div className="font-medium">{participant.nama}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {participant.kelas}
+                      {participant.kelas?.nama || "Unknown"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {participant.cabang.nama}

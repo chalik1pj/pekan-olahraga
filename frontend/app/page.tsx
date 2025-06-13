@@ -163,7 +163,7 @@ export default function Home() {
           </motion.div>
 
           <div className="absolute bottom-10 left-0 right-0">
-            <CountdownTimer targetDate="2025-05-14T15:30:00" />
+            <CountdownTimer targetDate="2025-07-15T16:30:00" />
           </div>
         </div>
       </section>
