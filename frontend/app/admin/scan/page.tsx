@@ -17,6 +17,7 @@ import {
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
 import QrCodeScanner from "@/components/QrCodeScanner";
+import { config } from "@/components/host/host";
 
 type ScanResult = {
   participant: {
@@ -109,7 +110,7 @@ export default function ScanQRPage() {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/admin/scan/${participantId}`
+        `${config.HOST}/api/admin/scan/${participantId}`
       );
 
       if (response.data.status === "success") {

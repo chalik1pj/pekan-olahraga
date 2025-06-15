@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
+import { config } from "@/components/host/host";
 
 type Participant = {
   id: number;
@@ -82,10 +83,10 @@ export default function ParticipantsPage() {
     try {
       // Fetch all participants (both approved and pending)
       const approvedResponse = await axios.get(
-        "http://localhost:5000/api/admin/register?status=approved"
+        `${config.HOST}/api/admin/register?status=approved`
       );
       const pendingResponse = await axios.get(
-        "http://localhost:5000/api/admin/register?status=pending"
+        `${config.HOST}/api/admin/register?status=pending`
       );
 
       if (
@@ -109,7 +110,7 @@ export default function ParticipantsPage() {
   const fetchSports = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/admin/cabang-olahraga"
+        `${config.HOST}/api/admin/cabang-olahraga`
       );
       if (response.data.status === "success") {
         setSports(response.data.data.competitions);

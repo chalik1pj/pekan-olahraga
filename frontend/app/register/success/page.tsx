@@ -49,15 +49,15 @@ export default function RegistrationSuccessPage() {
   }, [searchParams]);
 
   // Function to determine sport image
-  const getSportImage = (sportName: string) => {
-    if (sportName.includes("Sepak Bola")) return "/images/sports/soccer.png";
-    if (sportName.includes("Basket")) return "/images/sports/basketball.png";
-    if (sportName.includes("Voli")) return "/images/sports/volleyball.png";
-    if (sportName.includes("Tangkis")) return "/images/sports/badminton.png";
-    if (sportName.includes("Tenis")) return "/images/sports/table-tennis.png";
-    if (sportName.includes("Renang")) return "/images/sports/swimming.png";
-    return "/images/sports/default.png";
-  };
+  // const getSportImage = (sportName: string) => {
+  //   if (sportName.includes("Sepak Bola")) return "/images/sports/soccer.png";
+  //   if (sportName.includes("Basket")) return "/images/sports/basketball.png";
+  //   if (sportName.includes("Voli")) return "/images/sports/volleyball.png";
+  //   if (sportName.includes("Tangkis")) return "/images/sports/badminton.png";
+  //   if (sportName.includes("Tenis")) return "/images/sports/table-tennis.png";
+  //   if (sportName.includes("Renang")) return "/images/sports/swimming.png";
+  //   return "/images/sports/default.png";
+  // };
 
   if (!registrationDetails) {
     return (

@@ -10,6 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Lock, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { config } from "@/components/host/host";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -33,10 +34,7 @@ export default function AdminLoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/admin/login",
-        data
-      );
+      const response = await axios.post(`${config.HOST}/api/admin/login`, data);
 
       if (response.data.status === "success") {
         // Store token in localStorage

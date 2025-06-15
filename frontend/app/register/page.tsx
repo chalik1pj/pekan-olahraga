@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { config } from "@/components/host/host";
 
 // Define the form schema with Zod
 const participantSchema = z.object({
@@ -102,7 +103,7 @@ export default function RegisterPage() {
       try {
         // Fetch sports
         const sportsResponse = await axios.get(
-          "http://localhost:5000/api/admin/cabang-olahraga"
+          `${config.HOST}/api/admin/cabang-olahraga`
         );
         if (sportsResponse.data.status === "success") {
           setSports(sportsResponse.data.data.competitions);
@@ -110,7 +111,7 @@ export default function RegisterPage() {
 
         // Fetch classes
         const classesResponse = await axios.get(
-          "http://localhost:5000/api/pekan-olahraga/class"
+          `${config.HOST}/api/pekan-olahraga/class`
         );
         if (classesResponse.data.status === "success") {
           setClasses(classesResponse.data.data.competitions);
@@ -148,7 +149,7 @@ export default function RegisterPage() {
 
       // Add a timeout to the request to prevent hanging
       const response = await axios.post(
-        "http://localhost:5000/api/pekan-olahraga/register",
+        `${config.HOST}/api/pekan-olahraga/register`,
         data,
         {
           timeout: 30000,

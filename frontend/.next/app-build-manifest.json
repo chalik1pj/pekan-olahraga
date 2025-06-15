@@ -11,20 +11,40 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/register/page": [
+    "/admin/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/register/page.js"
+      "static/chunks/app/admin/login/page.js"
     ],
-    "/register/success/page": [
+    "/admin/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/register/success/page.js"
+      "static/chunks/app/admin/dashboard/page.js"
     ],
-    "/register/success/loading": [
+    "/admin/dashboard/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/register/success/loading.js"
+      "static/chunks/app/admin/dashboard/loading.js"
+    ],
+    "/admin/scan/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/scan/page.js"
+    ],
+    "/admin/scan/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/scan/loading.js"
+    ],
+    "/admin/participants/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/participants/page.js"
+    ],
+    "/admin/participants/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/participants/loading.js"
     ]
   }
 }
