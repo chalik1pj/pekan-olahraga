@@ -17,14 +17,12 @@ export default function CountdownTimer({ targetDate }: CountdownProps) {
   useEffect(() => {
     const target = new Date(targetDate).getTime();
 
-    const interval = setInterval(() => {
+    const calculateTimeLeft = () => {
       const now = new Date().getTime();
       const difference = target - now;
 
       if (difference <= 0) {
-        clearInterval(interval);
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -34,8 +32,24 @@ export default function CountdownTimer({ targetDate }: CountdownProps) {
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      setTimeLeft({ days, hours, minutes, seconds });
-    }, 2000);
+      return { days, hours, minutes, seconds };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+
+    const interval = setInterval(() => {
+      const newTimeLeft = calculateTimeLeft();
+      setTimeLeft(newTimeLeft);
+
+      if (
+        newTimeLeft.days === 0 &&
+        newTimeLeft.hours === 0 &&
+        newTimeLeft.minutes === 0 &&
+        newTimeLeft.seconds === 0
+      ) {
+        clearInterval(interval);
+      }
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [targetDate]);

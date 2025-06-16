@@ -22,7 +22,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Game On! - Pekan Olahraga 2025",
+  title: "Pekan Olahraga 2025",
   description: "Daftar untuk event olahraga terbesar tahun ini!",
 };
 

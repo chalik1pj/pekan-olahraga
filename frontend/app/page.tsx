@@ -132,7 +132,7 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/header-dash-bg.jpg"
+            src="/images/header-bg.jpg"
             alt="Game On! Pekan Olahraga"
             fill
             priority
@@ -317,7 +317,7 @@ export default function Home() {
       <section id="contact" className="py-20 relative">
         <div className="absolute inset-0 z-0 opacity-20">
           <Image
-            src="/images/cta-bg.jpg"
+            src="/images/contact-dash-bg.jpg"
             alt="Bergabunglah dengan kami"
             fill
             sizes="100vw"
