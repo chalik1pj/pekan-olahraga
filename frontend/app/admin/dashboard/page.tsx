@@ -12,10 +12,11 @@ import {
   Search,
   Users,
   XCircle,
+  TrendingUp,
+  UserCheck,
 } from "lucide-react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
-import { config } from "@/components/host/host";
 
 type Participant = {
   id: number;
@@ -89,7 +90,7 @@ export default function AdminDashboardPage() {
     try {
       // Fetch counts
       const countsResponse = await axios.get(
-        `${config.HOST}/api/admin/register?status=count`
+        "http://localhost:5000/api/admin/register?status=count"
       );
       if (countsResponse.data.status === "success") {
         setCounts(countsResponse.data.data.count);
@@ -97,7 +98,7 @@ export default function AdminDashboardPage() {
 
       // Fetch pending registrations
       const pendingResponse = await axios.get(
-        `${config.HOST}/api/admin/register?status=pending`
+        "http://localhost:5000/api/admin/register?status=pending"
       );
       if (pendingResponse.data.status === "success") {
         setPendingRegistrations(pendingResponse.data.data.pending);
@@ -105,7 +106,7 @@ export default function AdminDashboardPage() {
 
       // Fetch approved registrations
       const approvedResponse = await axios.get(
-        `${config.HOST}/api/admin/register?status=approved`
+        "http://localhost:5000/api/admin/register?status=approved"
       );
       if (approvedResponse.data.status === "success") {
         setApprovedRegistrations(approvedResponse.data.data.approved);
@@ -113,7 +114,7 @@ export default function AdminDashboardPage() {
 
       // Fetch re-registered count
       const reRegisteredResponse = await axios.get(
-        `${config.HOST}/api/admin/registrasi-ulang?status=count`
+        "http://localhost:5000/api/admin/registrasi-ulang?status=count"
       );
       if (reRegisteredResponse.data.status === "success") {
         setReRegisteredCount(reRegisteredResponse.data.data.participant);
@@ -131,7 +132,7 @@ export default function AdminDashboardPage() {
     try {
       console.log(`Approving registration with ID: ${id}`);
       const response = await axios.patch(
-        `${config.HOST}/api/admin/registration/${id}/APPROVED`
+        `http://localhost:5000/api/admin/registration/${id}/APPROVED`
       );
 
       console.log("Approval response:", response.data);
@@ -179,7 +180,7 @@ export default function AdminDashboardPage() {
     try {
       console.log(`Rejecting registration with ID: ${id}`);
       const response = await axios.patch(
-        `${config.HOST}/api/admin/registration/${id}/REJECT`
+        `http://localhost:5000/api/admin/registration/${id}/REJECT`
       );
 
       console.log("Rejection response:", response.data);
@@ -240,11 +241,17 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h1 className="text-2xl font-heading font-bold mb-4 md:mb-0">
-            Admin Dashboard
-          </h1>
+      <div className="space-y-6">
+        {/* Header Actions */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-gray-900">
+              Dashboard Overview
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Kelola pendaftaran peserta Pekan Olahraga 2025
+            </p>
+          </div>
 
           <button
             onClick={fetchDashboardData}
@@ -258,23 +265,26 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
+        {/* Action Result Alert */}
         {lastActionResult && (
           <div
-            className={`mb-6 p-4 rounded-lg ${
+            className={`p-4 rounded-xl border ${
               lastActionResult.success
-                ? "bg-green-500/10 border border-green-500"
-                : "bg-red-500/10 border border-red-500"
+                ? "bg-green-50 border-green-200"
+                : "bg-red-50 border-red-200"
             }`}
           >
             <div className="flex items-start">
               {lastActionResult.success ? (
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
               ) : (
-                <XCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+                <XCircle className="h-5 w-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
               )}
               <div>
-                <p className="font-medium">{lastActionResult.message}</p>
-                <p className="text-sm text-text-secondary">
+                <p className="font-medium text-gray-900">
+                  {lastActionResult.message}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
                   {lastActionResult.timestamp.toLocaleTimeString()}
                 </p>
               </div>
@@ -289,140 +299,174 @@ export default function AdminDashboardPage() {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-surface rounded-xl p-6 shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="stats-card">
                 <div className="flex items-center">
-                  <Users className="w-10 h-10 text-primary mr-4" />
-                  <div>
-                    <p className="text-text-secondary text-sm">Total Peserta</p>
-                    <h3 className="text-2xl font-bold">{counts.allRegist}</h3>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">
+                      Total Peserta
+                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {counts.allRegist}
+                    </h3>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-surface rounded-xl p-6 shadow-md">
+              <div className="stats-card">
                 <div className="flex items-center">
-                  <CheckCircle className="w-10 h-10 text-green-500 mr-4" />
-                  <div>
-                    <p className="text-text-secondary text-sm">Diterima</p>
-                    <h3 className="text-2xl font-bold">{counts.approve}</h3>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <UserCheck className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">
+                      Diterima
+                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {counts.approve}
+                    </h3>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-surface rounded-xl p-6 shadow-md">
+              <div className="stats-card">
                 <div className="flex items-center">
-                  <Clock className="w-10 h-10 text-yellow-500 mr-4" />
-                  <div>
-                    <p className="text-text-secondary text-sm">Menunggu</p>
-                    <h3 className="text-2xl font-bold">
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <Clock className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">
+                      Menunggu
+                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">
                       {pendingRegistrations.length}
                     </h3>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-surface rounded-xl p-6 shadow-md">
+              <div className="stats-card">
                 <div className="flex items-center">
-                  <RefreshCw className="w-10 h-10 text-blue-500 mr-4" />
-                  <div>
-                    <p className="text-text-secondary text-sm">Re-Registered</p>
-                    <h3 className="text-2xl font-bold">{reRegisteredCount}</h3>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">
+                      Re-Registered
+                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {reRegisteredCount}
+                    </h3>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Search */}
-            <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
-              <input
-                type="text"
-                placeholder="Cari nama, email, kelas, atau cabang perlombaan..."
-                className="input-field pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="admin-card">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Cari nama, email, kelas, atau cabang perlombaan..."
+                  className="input-field pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
 
             {/* Pending Registrations */}
-            <div className="mb-10">
-              <h2 className="text-xl font-semibold mb-4">
-                Menunggu Persetujuan
-              </h2>
+            <div className="admin-card">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Menunggu Persetujuan
+                </h2>
+                <span className="status-badge status-pending">
+                  {filteredPending.length} pending
+                </span>
+              </div>
 
               {filteredPending.length === 0 ? (
-                <div className="bg-surface rounded-xl p-6 text-center text-text-secondary">
-                  Tidak ada pending registration
+                <div className="text-center py-12">
+                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Tidak ada pending registration
+                  </h3>
+                  <p className="text-gray-600">
+                    Semua pendaftaran telah diproses
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full bg-surface rounded-xl overflow-hidden">
-                    <thead className="bg-background">
+                  <table className="admin-table">
+                    <thead className="admin-table-header">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        <th className="admin-table-header-cell">
                           Nama Peserta
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Kelas
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Jenis Lomba
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Kontak
-                        </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        <th className="admin-table-header-cell">Kelas</th>
+                        <th className="admin-table-header-cell">Jenis Lomba</th>
+                        <th className="admin-table-header-cell">Kontak</th>
+                        <th className="admin-table-header-cell text-right">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-700">
+                    <tbody>
                       {filteredPending.map((registration) => (
-                        <tr key={registration.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium">
+                        <tr
+                          key={registration.id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="admin-table-cell">
+                            <div className="font-medium text-gray-900">
                               {registration.nama}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="admin-table-cell text-gray-600">
                             {registration.kelas?.nama || "Unknown"}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="admin-table-cell text-gray-600">
                             {registration.cabang.nama}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>{registration.email}</div>
-                            <div className="text-text-secondary text-sm">
+                          <td className="admin-table-cell">
+                            <div className="text-gray-900">
+                              {registration.email}
+                            </div>
+                            <div className="text-gray-500 text-sm">
                               {registration.nowa}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <td className="admin-table-cell text-right">
                             <div className="flex justify-end space-x-2">
                               <button
                                 onClick={() => handleApprove(registration.id)}
                                 disabled={processingId === registration.id}
-                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm flex items-center"
+                                className="btn btn-success text-sm px-3 py-1"
                               >
                                 {processingId === registration.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
                                   <>
                                     <CheckCircle className="h-4 w-4 mr-1" />{" "}
-                                    Diterima
+                                    Terima
                                   </>
                                 )}
                               </button>
                               <button
                                 onClick={() => handleReject(registration.id)}
                                 disabled={processingId === registration.id}
-                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm flex items-center"
+                                className="btn btn-danger text-sm px-3 py-1"
                               >
                                 {processingId === registration.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
                                   <>
-                                    <XCircle className="h-4 w-4 mr-1" /> Ditolak
+                                    <XCircle className="h-4 w-4 mr-1" /> Tolak
                                   </>
                                 )}
                               </button>
@@ -437,65 +481,75 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Approved Registrations */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">
-                Perserta yang diterima
-              </h2>
+            <div className="admin-card">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Peserta yang Diterima
+                </h2>
+                <span className="status-badge status-approved">
+                  {filteredApproved.length} approved
+                </span>
+              </div>
 
               {filteredApproved.length === 0 ? (
-                <div className="bg-surface rounded-xl p-6 text-center text-text-secondary">
-                  Peserta yang diterima tidak ditemukan
+                <div className="text-center py-12">
+                  <UserCheck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Belum ada peserta yang diterima
+                  </h3>
+                  <p className="text-gray-600">
+                    Peserta yang diterima akan muncul di sini
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full bg-surface rounded-xl overflow-hidden">
-                    <thead className="bg-background">
+                  <table className="admin-table">
+                    <thead className="admin-table-header">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        <th className="admin-table-header-cell">
                           Nama Peserta
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Kelas
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Jenis Lomba
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Kontak
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        <th className="admin-table-header-cell">Kelas</th>
+                        <th className="admin-table-header-cell">Jenis Lomba</th>
+                        <th className="admin-table-header-cell">Kontak</th>
+                        <th className="admin-table-header-cell">
                           Registrasi Ulang
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-700">
+                    <tbody>
                       {filteredApproved.map((registration) => (
-                        <tr key={registration.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium">
+                        <tr
+                          key={registration.id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="admin-table-cell">
+                            <div className="font-medium text-gray-900">
                               {registration.nama}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="admin-table-cell text-gray-600">
                             {registration.kelas?.nama || "Unknown"}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="admin-table-cell text-gray-600">
                             {registration.cabang.nama}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>{registration.email}</div>
-                            <div className="text-text-secondary text-sm">
+                          <td className="admin-table-cell">
+                            <div className="text-gray-900">
+                              {registration.email}
+                            </div>
+                            <div className="text-gray-500 text-sm">
                               {registration.nowa}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="admin-table-cell">
                             {registration.updateAt ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <CheckCircle className="h-3 w-3 mr-1" /> Yes
+                              <span className="status-badge status-approved">
+                                <CheckCircle className="h-3 w-3 mr-1" /> Sudah
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                <XCircle className="h-3 w-3 mr-1" /> No
+                              <span className="status-badge bg-gray-100 text-gray-800">
+                                <XCircle className="h-3 w-3 mr-1" /> Belum
                               </span>
                             )}
                           </td>

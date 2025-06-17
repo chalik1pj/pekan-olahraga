@@ -6,7 +6,6 @@ import { Toaster } from "react-hot-toast";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
-// FIX 3: Ensure proper font loading with correct subsets and display
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -40,7 +39,17 @@ export default function RootLayout({
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "#fff",
+              color: "#333",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            },
+          }}
+        />
       </body>
     </html>
   );

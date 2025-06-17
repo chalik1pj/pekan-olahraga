@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { config } from "@/components/host/host";
 
 // Define the form schema with Zod
 const participantSchema = z.object({
@@ -95,6 +94,14 @@ export default function RegisterPage() {
 
   const selectedSport = watch("nama");
 
+  // Add registration page class to body
+  useEffect(() => {
+    document.body.classList.add("registration-page");
+    return () => {
+      document.body.classList.remove("registration-page");
+    };
+  }, []);
+
   // Fetch sports categories and classes on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -103,7 +110,7 @@ export default function RegisterPage() {
       try {
         // Fetch sports
         const sportsResponse = await axios.get(
-          `${config.HOST}/api/admin/cabang-olahraga`
+          "http://localhost:5000/api/admin/cabang-olahraga"
         );
         if (sportsResponse.data.status === "success") {
           setSports(sportsResponse.data.data.competitions);
@@ -111,7 +118,7 @@ export default function RegisterPage() {
 
         // Fetch classes
         const classesResponse = await axios.get(
-          `${config.HOST}/api/pekan-olahraga/class`
+          "http://localhost:5000/api/pekan-olahraga/class"
         );
         if (classesResponse.data.status === "success") {
           setClasses(classesResponse.data.data.competitions);
@@ -149,7 +156,7 @@ export default function RegisterPage() {
 
       // Add a timeout to the request to prevent hanging
       const response = await axios.post(
-        `${config.HOST}/api/pekan-olahraga/register`,
+        "http://localhost:5000/api/pekan-olahraga/register",
         data,
         {
           timeout: 30000,
@@ -169,11 +176,6 @@ export default function RegisterPage() {
           emailsSent: response.data.data?.emailsSent,
           totalEmails: response.data.data?.totalEmails,
         });
-
-        // Show success message with email info
-        const emailInfo = response.data.data?.emailsSent
-          ? ` ${response.data.data.emailsSent}/${response.data.data.totalEmails} email terkirim.`
-          : "";
 
         toast.success("Pendaftaran berhasil!! Mohon tunggu sebentar.");
 
@@ -247,49 +249,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="py-12 md:py-20">
+    <div className="py-12 md:py-20 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center text-primary mb-8 hover:underline"
+            className="inline-flex items-center text-primary mb-8 hover:underline transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Beranda
           </Link>
 
-          <div className="bg-surface rounded-2xl p-6 md:p-10 shadow-xl">
+          <div className="bg-white rounded-2xl p-6 md:p-10 shadow-xl border border-gray-100">
             <div className="flex items-center justify-center mb-8">
               <Trophy className="w-10 h-10 text-primary mr-4" />
-              <h1 className="text-3xl md:text-4xl font-heading font-bold">
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-gray-900">
                 Daftarkan Tim Anda
               </h1>
             </div>
 
-            <p className="text-center text-text-secondary mb-10 font-sans">
+            <p className="text-center text-gray-600 mb-10 font-sans">
               Isi formulir di bawah ini untuk mendaftar ke Pekan Olahraga 2025
             </p>
 
             {registrationResult && (
               <div
-                className={`bg-${
-                  registrationResult.success ? "green" : "red"
-                }-500/10 border border-${
-                  registrationResult.success ? "green" : "red"
-                }-500 rounded-xl p-4 mb-6`}
+                className={`${
+                  registrationResult.success
+                    ? "bg-green-50 border-green-200"
+                    : "bg-red-50 border-red-200"
+                } border rounded-xl p-4 mb-6`}
               >
                 <div className="flex items-start">
                   <Info
-                    className={`h-5 w-5 text-${
-                      registrationResult.success ? "green" : "red"
-                    }-500 mt-0.5 mr-2 flex-shrink-0`}
+                    className={`h-5 w-5 ${
+                      registrationResult.success
+                        ? "text-green-600"
+                        : "text-red-600"
+                    } mt-0.5 mr-2 flex-shrink-0`}
                   />
                   <div>
-                    <p className="font-medium font-sans">
+                    <p className="font-medium font-sans text-gray-900">
                       {registrationResult.success
                         ? "Pendaftaran Berhasil!"
                         : "Pendaftaran Gagal"}
                     </p>
-                    <p className="text-sm text-text-secondary font-sans">
+                    <p className="text-sm text-gray-600 font-sans">
                       {registrationResult.message ||
                         (registrationResult.success
                           ? registrationResult.isExistingBranch
@@ -299,7 +303,7 @@ export default function RegisterPage() {
                     </p>
                     {registrationResult.success &&
                       registrationResult.emailsSent !== undefined && (
-                        <p className="text-sm text-text-secondary font-sans mt-1">
+                        <p className="text-sm text-gray-600 font-sans mt-1">
                           {registrationResult.emailsSent}/
                           {registrationResult.totalEmails} email konfirmasi
                           telah dikirim.
@@ -317,7 +321,7 @@ export default function RegisterPage() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold border-b border-gray-700 pb-2 font-sans">
+                  <h2 className="text-xl font-semibold border-b border-gray-200 pb-2 font-sans text-gray-900">
                     Pilih Cabang Olahraga
                   </h2>
 
@@ -340,11 +344,13 @@ export default function RegisterPage() {
                             className="h-full font-sans"
                           >
                             <div className="radio-icon"></div>
-                            <div className="font-semibold">{sport.nama}</div>
-                            <div className="text-sm text-text-secondary mt-1">
+                            <div className="font-semibold text-gray-900">
+                              {sport.nama}
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">
                               {sport.participant} peserta
                             </div>
-                            <div className="text-sm text-text-secondary">
+                            <div className="text-sm text-gray-600">
                               Rp {sport.harga.toLocaleString()}
                             </div>
                           </label>
@@ -361,24 +367,18 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold border-b border-gray-700 pb-2 font-sans">
+                  <h2 className="text-xl font-semibold border-b border-gray-200 pb-2 font-sans text-gray-900">
                     Informasi Peserta
                   </h2>
 
                   {fields.map((field, index) => (
                     <div
                       key={field.id}
-                      className="p-6 border border-gray-700 rounded-xl space-y-4"
+                      className="p-6 border border-gray-200 rounded-xl space-y-4 bg-gray-50"
                     >
-                      {/* <div className="flex justify-between items-center">
-                        <h3 className="font-semibold font-sans">
-                          Peserta #{index + 1}
-                        </h3>
-                      </div> */}
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium mb-1 font-sans">
+                          <label className="block text-sm font-medium mb-1 font-sans text-gray-700">
                             Nama Lengkap
                           </label>
                           <textarea
@@ -394,7 +394,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium mb-1 font-sans">
+                          <label className="block text-sm font-medium mb-1 font-sans text-gray-700">
                             Kelas dan Ketua Kelas
                           </label>
                           <input
@@ -432,7 +432,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium mb-1 font-sans">
+                          <label className="block text-sm font-medium mb-1 font-sans text-gray-700">
                             Email
                           </label>
                           <input
@@ -449,7 +449,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium mb-1 font-sans">
+                          <label className="block text-sm font-medium mb-1 font-sans text-gray-700">
                             Nomor Telepon (WhatsApp)
                           </label>
                           <input

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -24,6 +23,14 @@ export default function RegistrationSuccessPage() {
     date: string;
     status: string;
   } | null>(null);
+
+  // Add registration page class to body
+  useEffect(() => {
+    document.body.classList.add("registration-page");
+    return () => {
+      document.body.classList.remove("registration-page");
+    };
+  }, []);
 
   useEffect(() => {
     // Try to get registration details from session storage
@@ -49,15 +56,15 @@ export default function RegistrationSuccessPage() {
   }, [searchParams]);
 
   // Function to determine sport image
-  // const getSportImage = (sportName: string) => {
-  //   if (sportName.includes("Sepak Bola")) return "/images/sports/soccer.png";
-  //   if (sportName.includes("Basket")) return "/images/sports/basketball.png";
-  //   if (sportName.includes("Voli")) return "/images/sports/volleyball.png";
-  //   if (sportName.includes("Tangkis")) return "/images/sports/badminton.png";
-  //   if (sportName.includes("Tenis")) return "/images/sports/table-tennis.png";
-  //   if (sportName.includes("Renang")) return "/images/sports/swimming.png";
-  //   return "/images/sports/default.png";
-  // };
+  const getSportImage = (sportName: string) => {
+    if (sportName.includes("Sepak Bola")) return "/images/sports/soccer.png";
+    if (sportName.includes("Basket")) return "/images/sports/basketball.png";
+    if (sportName.includes("Voli")) return "/images/sports/volleyball.png";
+    if (sportName.includes("Tangkis")) return "/images/sports/badminton.png";
+    if (sportName.includes("Tenis")) return "/images/sports/table-tennis.png";
+    if (sportName.includes("Renang")) return "/images/sports/swimming.png";
+    return "/images/sports/default.png";
+  };
 
   if (!registrationDetails) {
     return (
@@ -68,12 +75,12 @@ export default function RegistrationSuccessPage() {
   }
 
   return (
-    <div className="py-12 md:py-20">
+    <div className="py-12 md:py-20 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center text-primary mb-8 hover:underline"
+            className="inline-flex items-center text-primary mb-8 hover:underline transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Beranda
           </Link>
@@ -82,7 +89,7 @@ export default function RegistrationSuccessPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-surface rounded-2xl p-6 md:p-10 shadow-xl"
+            className="bg-white rounded-2xl p-6 md:p-10 shadow-xl border border-gray-100"
           >
             <div className="flex flex-col items-center justify-center mb-8 text-center">
               <motion.div
@@ -92,55 +99,57 @@ export default function RegistrationSuccessPage() {
               >
                 <CheckCircle className="w-20 h-20 text-green-500 mb-4" />
               </motion.div>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2">
+              <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2 text-gray-900">
                 Pendaftaran Berhasil!
               </h1>
-              <p className="text-text-secondary">
+              <p className="text-gray-600">
                 Terima kasih telah mendaftar untuk Pekan Olahraga 2025
               </p>
             </div>
 
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Detail Pendaftaran</h2>
-                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-sm font-medium">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Detail Pendaftaran
+                </h2>
+                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-700 rounded-full text-sm font-medium">
                   {registrationDetails.status}
                 </span>
               </div>
 
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-1">
-                  <div className="text-sm text-text-secondary mb-1">
+                  <div className="text-sm text-gray-600 mb-1">
                     ID Pendaftaran
                   </div>
-                  <div className="text-xl font-mono font-semibold">
+                  <div className="text-xl font-mono font-semibold text-gray-900">
                     {registrationDetails.id}
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm text-text-secondary mb-1">
+                  <div className="text-sm text-gray-600 mb-1">
                     Tanggal Pendaftaran
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-gray-900">
                     <Calendar className="w-4 h-4 mr-2 text-primary" />
                     {registrationDetails.date}
                   </div>
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 my-4"></div>
+              <div className="border-t border-gray-200 my-4"></div>
 
               <div className="flex flex-col md:flex-row items-center gap-6">
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900">
                     {registrationDetails.sportName}
                   </h3>
                   <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex items-center justify-center md:justify-start">
+                    <div className="flex items-center justify-center md:justify-start text-gray-700">
                       <Users className="w-4 h-4 mr-2 text-primary" />
                       <span>{registrationDetails.participants} peserta</span>
                     </div>
-                    <div className="font-medium">
+                    <div className="font-medium text-gray-900">
                       Rp {registrationDetails.price.toLocaleString()}
                     </div>
                   </div>
@@ -150,10 +159,12 @@ export default function RegistrationSuccessPage() {
 
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-8">
               <div className="flex items-start">
-                <Info className="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
+                <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h3 className="font-medium mb-2">Langkah Selanjutnya</h3>
-                  <ul className="text-sm space-y-2 text-text-secondary">
+                  <h3 className="font-medium mb-2 text-gray-900">
+                    Langkah Selanjutnya
+                  </h3>
+                  <ul className="text-sm space-y-2 text-gray-700">
                     <li>1. Periksa email Anda untuk konfirmasi pendaftaran</li>
                     <li>2. Tunggu persetujuan dari panitia (1-2 hari kerja)</li>
                     <li>

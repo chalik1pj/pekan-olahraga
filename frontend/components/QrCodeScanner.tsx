@@ -8,7 +8,13 @@ import {
   Html5QrcodeScannerState,
   Html5QrcodeError,
 } from "html5-qrcode";
-import { Camera, StopCircle, Upload, RefreshCw } from "lucide-react";
+import {
+  Camera,
+  StopCircle,
+  Upload,
+  RefreshCw,
+  AlertCircle,
+} from "lucide-react";
 
 interface QrCodeScannerProps {
   onScanSuccess: (decodedText: string) => void;
@@ -174,8 +180,9 @@ export default function QrCodeScanner({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2 justify-center mb-4">
+    <div className="space-y-6">
+      {/* Scanner Controls */}
+      <div className="flex flex-wrap gap-3 justify-center">
         <button
           onClick={() =>
             setScannerState((prev) => (prev === "camera" ? "idle" : "camera"))
@@ -185,7 +192,7 @@ export default function QrCodeScanner({
           }`}
           disabled={isLoading || scannerState === "scanning"}
         >
-          <Camera className="mr-2 h-5 w-5" />
+          <Camera className="mr-2 h-4 w-4" />
           Gunakan Kamera
         </button>
 
@@ -194,7 +201,7 @@ export default function QrCodeScanner({
             scannerState === "file" ? "btn-primary" : "btn-outline"
           } cursor-pointer`}
         >
-          <Upload className="mr-2 h-5 w-5" />
+          <Upload className="mr-2 h-4 w-4" />
           Unggah Gambar QR
           <input
             type="file"
@@ -208,26 +215,29 @@ export default function QrCodeScanner({
         {scannerState === "scanning" && (
           <button
             onClick={stopCameraScanner}
-            className="btn btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            className="btn btn-danger"
             disabled={isLoading}
           >
-            <StopCircle className="mr-2 h-5 w-5" />
+            <StopCircle className="mr-2 h-4 w-4" />
             Hentikan Pemindaian
           </button>
         )}
       </div>
 
+      {/* Error Display */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500 rounded-lg p-4 text-center mb-4">
-          <p className="text-red-500">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+          <AlertCircle className="h-5 w-5 text-red-600 mx-auto mb-2" />
+          <p className="text-red-700 font-medium">{error}</p>
         </div>
       )}
 
+      {/* Camera Selection */}
       {scannerState === "camera" && !isLoading && (
-        <div className="space-y-4">
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           {availableCameras.length > 1 && (
-            <div>
-              <label className="block text-sm font-medium mb-1">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Pilih Kamera
               </label>
               <select
@@ -249,28 +259,40 @@ export default function QrCodeScanner({
             className="btn btn-primary w-full"
             disabled={!selectedCamera}
           >
+            <Camera className="mr-2 h-4 w-4" />
             Mulai Pemindaian
           </button>
         </div>
       )}
 
+      {/* Loading State */}
       {isLoading && (
-        <div className="flex justify-center py-4">
-          <RefreshCw className="h-8 w-8 text-primary animate-spin" />
+        <div className="flex justify-center py-6">
+          <div className="flex items-center space-x-2 text-primary">
+            <RefreshCw className="h-6 w-6 animate-spin" />
+            <span className="font-medium">Memproses...</span>
+          </div>
         </div>
       )}
 
+      {/* Scanner Container */}
       <div
         id={scannerContainerId}
-        className={`overflow-hidden rounded-lg ${
+        className={`overflow-hidden rounded-lg border border-gray-200 ${
           scannerState !== "scanning" ? "hidden" : ""
         }`}
       ></div>
 
+      {/* Scanning Instructions */}
       {scannerState === "scanning" && (
-        <p className="text-center text-sm text-text-secondary">
-          Arahkan kamera ke QR code untuk memindai
-        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+          <p className="text-blue-800 font-medium">
+            Arahkan kamera ke QR code untuk memindai
+          </p>
+          <p className="text-blue-600 text-sm mt-1">
+            Pastikan QR code berada dalam kotak pemindaian
+          </p>
+        </div>
       )}
     </div>
   );

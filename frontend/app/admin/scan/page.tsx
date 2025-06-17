@@ -17,7 +17,6 @@ import {
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
 import QrCodeScanner from "@/components/QrCodeScanner";
-import { config } from "@/components/host/host";
 
 type ScanResult = {
   participant: {
@@ -110,7 +109,7 @@ export default function ScanQRPage() {
 
     try {
       const response = await axios.patch(
-        `${config.HOST}/api/admin/scan/${participantId}`
+        `http://localhost:5000/api/admin/scan/${participantId}`
       );
 
       if (response.data.status === "success") {
@@ -144,24 +143,40 @@ export default function ScanQRPage() {
     toast.error(errorMessage);
   };
 
+  const resetScan = () => {
+    setScanResult(null);
+    setError(null);
+    setQrCode("");
+  };
+
   return (
     <AdminLayout>
-      <div className="p-6">
-        <h1 className="text-2xl font-heading font-bold mb-8">
-          QR Code Scanner
-        </h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className="text-2xl font-heading font-bold text-gray-900">
+            QR Code Scanner
+          </h2>
+          <p className="text-gray-600 mt-1">
+            Pindai QR code peserta untuk registrasi ulang
+          </p>
+        </div>
 
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-surface rounded-xl p-6 shadow-md mb-8">
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Scanner Mode Toggle */}
+          <div className="admin-card">
             <div className="flex justify-center mb-6">
-              <div className="inline-flex rounded-md shadow-sm" role="group">
+              <div
+                className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1"
+                role="group"
+              >
                 <button
                   type="button"
                   onClick={() => setScanMode("manual")}
-                  className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                     scanMode === "manual"
-                      ? "bg-primary text-white"
-                      : "bg-surface text-text-primary hover:bg-primary/10"
+                      ? "bg-white text-primary shadow-sm border border-gray-200"
+                      : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   <QrCode className="h-4 w-4 mr-2 inline-block" />
@@ -170,10 +185,10 @@ export default function ScanQRPage() {
                 <button
                   type="button"
                   onClick={() => setScanMode("scanner")}
-                  className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                     scanMode === "scanner"
-                      ? "bg-primary text-white"
-                      : "bg-surface text-text-primary hover:bg-primary/10"
+                      ? "bg-white text-primary shadow-sm border border-gray-200"
+                      : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   <Scan className="h-4 w-4 mr-2 inline-block" />
@@ -187,7 +202,7 @@ export default function ScanQRPage() {
                 <div>
                   <label
                     htmlFor="qrCode"
-                    className="block text-sm font-medium mb-1"
+                    className="block text-sm font-medium text-gray-700 mb-2"
                   >
                     Masukkan ID QR Code
                   </label>
@@ -200,7 +215,7 @@ export default function ScanQRPage() {
                       value={qrCode}
                       onChange={(e) => setQrCode(e.target.value)}
                     />
-                    <QrCode className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+                    <QrCode className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   </div>
                 </div>
 
@@ -223,78 +238,95 @@ export default function ScanQRPage() {
                 </button>
               </form>
             ) : (
-              <QrCodeScanner
-                onScanSuccess={handleScanSuccess}
-                onScanError={handleScanError}
-              />
+              <div className="qr-scanner-container p-6">
+                <QrCodeScanner
+                  onScanSuccess={handleScanSuccess}
+                  onScanError={handleScanError}
+                />
+              </div>
             )}
           </div>
 
+          {/* Error Result */}
           {error && !scanResult && (
-            <div className="bg-red-500/10 border border-red-500 rounded-xl p-6 text-center">
-              <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Pemindaian Gagal</h2>
-              <p className="text-text-secondary">{error}</p>
+            <div className="qr-result-error p-6 text-center">
+              <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Pemindaian Gagal
+              </h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button onClick={resetScan} className="btn btn-outline">
+                Coba Lagi
+              </button>
             </div>
           )}
 
+          {/* Success Result */}
           {scanResult && (
-            <div className="bg-green-500/10 border border-green-500 rounded-xl p-6">
+            <div className="qr-result-success p-6">
               <div className="text-center mb-6">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">
+                <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Peserta Terverifikasi
-                </h2>
-                <p className="text-text-secondary">{scanResult.message}</p>
+                </h3>
+                <p className="text-gray-600">{scanResult.message}</p>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-background rounded-lg p-4">
-                    <p className="text-sm text-text-secondary mb-1">Nama</p>
-                    <p className="font-semibold">
-                      {scanResult.participant.nama}
-                    </p>
-                  </div>
-
-                  <div className="bg-background rounded-lg p-4">
-                    <p className="text-sm text-text-secondary mb-1">Kelas</p>
-                    <p className="font-semibold">
-                      {scanResult.participant.kelas?.nama || "Unknown"}
-                    </p>
-                  </div>
-
-                  <div className="bg-background rounded-lg p-4">
-                    <p className="text-sm text-text-secondary mb-1">Email</p>
-                    <p className="font-semibold">
-                      {scanResult.participant.email}
-                    </p>
-                  </div>
-
-                  <div className="bg-background rounded-lg p-4">
-                    <p className="text-sm text-text-secondary mb-1">Telepon</p>
-                    <p className="font-semibold">
-                      {scanResult.participant.nowa}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">Nama</p>
+                  <p className="text-gray-900 font-semibold">
+                    {scanResult.participant.nama}
+                  </p>
                 </div>
 
-                <div className="bg-background rounded-lg p-4">
-                  <p className="text-sm text-text-secondary mb-1">ID Peserta</p>
-                  <p className="font-semibold">{scanResult.participant.id}</p>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
+                    Kelas
+                  </p>
+                  <p className="text-gray-900 font-semibold">
+                    {scanResult.participant.kelas?.nama || "Unknown"}
+                  </p>
                 </div>
 
-                <div className="bg-background rounded-lg p-4">
-                  <p className="text-sm text-text-secondary mb-1">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </p>
+                  <p className="text-gray-900 font-semibold">
+                    {scanResult.participant.email}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
+                    Telepon
+                  </p>
+                  <p className="text-gray-900 font-semibold">
+                    {scanResult.participant.nowa}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
+                    ID Peserta
+                  </p>
+                  <p className="text-gray-900 font-semibold">
+                    {scanResult.participant.id}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
                     Cabang Olahraga
                   </p>
-                  <p className="font-semibold">
+                  <p className="text-gray-900 font-semibold">
                     {scanResult.participant.cabang.nama}
                   </p>
                 </div>
 
-                <div className="bg-background rounded-lg p-4">
-                  <p className="text-sm text-text-secondary mb-1">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
                     Status Pendaftaran
                   </p>
                   <div className="flex items-center">
@@ -307,34 +339,44 @@ export default function ScanQRPage() {
                           : "bg-red-500"
                       }`}
                     ></div>
-                    <p className="font-semibold">
+                    <span
+                      className={`font-semibold ${
+                        scanResult.participant.status === "APPROVED"
+                          ? "text-green-700"
+                          : scanResult.participant.status === "PENDING"
+                          ? "text-yellow-700"
+                          : "text-red-700"
+                      }`}
+                    >
                       {scanResult.participant.status}
-                    </p>
+                    </span>
                   </div>
                 </div>
 
-                <div className="bg-background rounded-lg p-4">
-                  <p className="text-sm text-text-secondary mb-1">
-                    Waktu Registrasi Ulang
-                  </p>
-                  <p className="font-semibold">
-                    {scanResult.participant.updateAt
-                      ? new Date(
-                          scanResult.participant.updateAt
-                        ).toLocaleString()
-                      : "Baru saja selesai"}
-                  </p>
-                </div>
-
-                <div className="bg-background rounded-lg p-4">
-                  <p className="text-sm text-text-secondary mb-1">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-1">
                     Ketua Kelas
                   </p>
-                  <p className="font-semibold">
+                  <p className="text-gray-900 font-semibold">
                     {scanResult.participant.kelas?.komting || "Unknown"}
                   </p>
                 </div>
               </div>
+
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
+                <p className="text-sm font-medium text-blue-900 mb-1">
+                  Waktu Registrasi Ulang
+                </p>
+                <p className="text-blue-800 font-semibold">
+                  {scanResult.participant.updateAt
+                    ? new Date(scanResult.participant.updateAt).toLocaleString()
+                    : "Baru saja selesai"}
+                </p>
+              </div>
+
+              <button onClick={resetScan} className="btn btn-primary w-full">
+                Pindai QR Code Lain
+              </button>
             </div>
           )}
         </div>

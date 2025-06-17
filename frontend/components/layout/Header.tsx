@@ -32,11 +32,14 @@ export default function Header() {
     return null;
   }
 
+  // Check if we're on registration pages
+  const isRegistrationPage = pathname.startsWith("/register");
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/90 backdrop-blur-md shadow-lg"
+        isScrolled || isRegistrationPage
+          ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200"
           : "bg-transparent"
       }`}
     >
@@ -44,7 +47,24 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-heading font-bold">
-              <span className="text-primary">Pekan</span> Olahraga
+              <span
+                className={`${
+                  isScrolled || isRegistrationPage
+                    ? "text-primary"
+                    : "text-white"
+                }`}
+              >
+                Pekan
+              </span>{" "}
+              <span
+                className={`${
+                  isScrolled || isRegistrationPage
+                    ? "text-gray-900"
+                    : "text-white"
+                }`}
+              >
+                Olahraga
+              </span>
             </span>
           </Link>
 
@@ -52,25 +72,41 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
-              className="text-text-primary hover:text-primary transition-colors"
+              className={`font-medium transition-colors ${
+                isScrolled || isRegistrationPage
+                  ? "text-gray-700 hover:text-primary"
+                  : "text-white hover:text-yellow-300"
+              }`}
             >
               Beranda
             </Link>
             <Link
               href="/#about"
-              className="text-text-primary hover:text-primary transition-colors"
+              className={`font-medium transition-colors ${
+                isScrolled || isRegistrationPage
+                  ? "text-gray-700 hover:text-primary"
+                  : "text-white hover:text-yellow-300"
+              }`}
             >
               Tentang
             </Link>
             <Link
               href="/#sports"
-              className="text-text-primary hover:text-primary transition-colors"
+              className={`font-medium transition-colors ${
+                isScrolled || isRegistrationPage
+                  ? "text-gray-700 hover:text-primary"
+                  : "text-white hover:text-yellow-300"
+              }`}
             >
               Cabang Olahraga
             </Link>
             <Link
               href="/#contact"
-              className="text-text-primary hover:text-primary transition-colors"
+              className={`font-medium transition-colors ${
+                isScrolled || isRegistrationPage
+                  ? "text-gray-700 hover:text-primary"
+                  : "text-white hover:text-yellow-300"
+              }`}
             >
               Kontak
             </Link>
@@ -81,7 +117,9 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-white"
+            className={`md:hidden transition-colors ${
+              isScrolled || isRegistrationPage ? "text-gray-900" : "text-white"
+            }`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -95,33 +133,33 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-surface">
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
           <div className="container mx-auto px-4 py-4">
             <nav className="flex flex-col space-y-4">
               <Link
                 href="/"
-                className="text-text-primary hover:text-primary transition-colors py-2"
+                className="text-gray-700 hover:text-primary transition-colors py-2 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Beranda
               </Link>
               <Link
                 href="/#about"
-                className="text-text-primary hover:text-primary transition-colors py-2"
+                className="text-gray-700 hover:text-primary transition-colors py-2 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Tentang
               </Link>
               <Link
                 href="/#sports"
-                className="text-text-primary hover:text-primary transition-colors py-2"
+                className="text-gray-700 hover:text-primary transition-colors py-2 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cabang Olahraga
               </Link>
               <Link
                 href="/#contact"
-                className="text-text-primary hover:text-primary transition-colors py-2"
+                className="text-gray-700 hover:text-primary transition-colors py-2 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Kontak

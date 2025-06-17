@@ -5,18 +5,15 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import {
-  CheckCircle,
   Download,
   Loader2,
   RefreshCw,
   Search,
   Users,
-  XCircle,
-  Clock,
+  Filter,
 } from "lucide-react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
-import { config } from "@/components/host/host";
 
 type Participant = {
   id: number;
@@ -83,10 +80,10 @@ export default function ParticipantsPage() {
     try {
       // Fetch all participants (both approved and pending)
       const approvedResponse = await axios.get(
-        `${config.HOST}/api/admin/register?status=approved`
+        "http://localhost:5000/api/admin/register?status=approved"
       );
       const pendingResponse = await axios.get(
-        `${config.HOST}/api/admin/register?status=pending`
+        "http://localhost:5000/api/admin/register?status=pending"
       );
 
       if (
@@ -110,7 +107,7 @@ export default function ParticipantsPage() {
   const fetchSports = async () => {
     try {
       const response = await axios.get(
-        `${config.HOST}/api/admin/cabang-olahraga`
+        "http://localhost:5000/api/admin/cabang-olahraga"
       );
       if (response.data.status === "success") {
         setSports(response.data.data.competitions);
@@ -195,15 +192,31 @@ export default function ParticipantsPage() {
 
   const filteredParticipants = filterParticipants();
 
+  const getStatusBadge = (status: string, updateAt: string | null) => {
+    if (status === "APPROVED") {
+      return <span className="status-badge status-approved">Diterima</span>;
+    } else if (status === "PENDING") {
+      return <span className="status-badge status-pending">Menunggu</span>;
+    } else {
+      return <span className="status-badge status-rejected">Ditolak</span>;
+    }
+  };
+
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h1 className="text-2xl font-heading font-bold mb-4 md:mb-0">
-            Peserta
-          </h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-gray-900">
+              Manajemen Peserta
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Kelola dan pantau semua peserta Pekan Olahraga 2025
+            </p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={fetchParticipants}
               className="btn btn-outline"
@@ -227,11 +240,16 @@ export default function ParticipantsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-surface rounded-xl p-4 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
+        <div className="admin-card">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="h-5 w-5 text-gray-500" />
+            <h3 className="font-medium text-gray-900">Filter & Pencarian</h3>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
                   placeholder="Cari nama, email, kelas, atau cabang perlombaan..."
@@ -242,124 +260,122 @@ export default function ParticipantsPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div>
-                <select
-                  className="input-field"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">All Status</option>
-                  <option value="APPROVED">Diterima</option>
-                  <option value="PENDING">Menunggu</option>
-                  <option value="REJECT">Ditolak</option>
-                  <option value="REREGISTERED">Re-Registered</option>
-                </select>
-              </div>
+            <div>
+              <select
+                className="input-field"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">Semua Status</option>
+                <option value="APPROVED">Diterima</option>
+                <option value="PENDING">Menunggu</option>
+                <option value="REJECT">Ditolak</option>
+                <option value="REREGISTERED">Re-Registered</option>
+              </select>
+            </div>
 
-              <div>
-                <select
-                  className="input-field"
-                  value={sportFilter}
-                  onChange={(e) => setSportFilter(e.target.value)}
-                >
-                  <option value="all">Seluruh Cabang</option>
-                  {sports.map((sport) => (
-                    <option key={sport.id} value={sport.id}>
-                      {sport.nama}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div>
+              <select
+                className="input-field"
+                value={sportFilter}
+                onChange={(e) => setSportFilter(e.target.value)}
+              >
+                <option value="all">Seluruh Cabang</option>
+                {sports.map((sport) => (
+                  <option key={sport.id} value={sport.id}>
+                    {sport.nama}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
 
+        {/* Results */}
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <div className="admin-card">
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            </div>
           </div>
         ) : filteredParticipants.length === 0 ? (
-          <div className="bg-surface rounded-xl p-12 text-center">
-            <Users className="w-12 h-12 text-text-secondary mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Tidak ada peserta ditemukan
-            </h2>
-            <p className="text-text-secondary">
-              No participants match your current filters. Try adjusting your
-              search criteria.
-            </p>
+          <div className="admin-card">
+            <div className="text-center py-12">
+              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Tidak ada peserta ditemukan
+              </h3>
+              <p className="text-gray-600">
+                Tidak ada peserta yang sesuai dengan kriteria pencarian Anda.
+                Coba sesuaikan filter pencarian.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full bg-surface rounded-xl overflow-hidden">
-              <thead className="bg-background">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Nama Peserta
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Kelas
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Jenis Lomba
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Kontak
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Registrasi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {filteredParticipants.map((participant) => (
-                  <tr key={participant.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium">{participant.nama}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {participant.kelas?.nama || "Unknown"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {participant.cabang.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>{participant.email}</div>
-                      <div className="text-text-secondary text-sm">
-                        {participant.nowa}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {participant.status === "APPROVED" ? (
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                        ) : participant.status === "PENDING" ? (
-                          <Clock className="h-4 w-4 text-yellow-500 mr-1" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-500 mr-1" />
-                        )}
-                        <span>{participant.status}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        {new Date(participant.createAt).toLocaleDateString()}
-                      </div>
-                      {participant.updateAt && (
-                        <div className="text-green-500 text-sm flex items-center">
-                          <RefreshCw className="h-3 w-3 mr-1" />
-                          Registrasi Ulang
-                        </div>
-                      )}
-                    </td>
+          <div className="admin-card">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Daftar Peserta ({filteredParticipants.length})
+              </h3>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="admin-table">
+                <thead className="admin-table-header">
+                  <tr>
+                    <th className="admin-table-header-cell">Nama Peserta</th>
+                    <th className="admin-table-header-cell">Kelas</th>
+                    <th className="admin-table-header-cell">Jenis Lomba</th>
+                    <th className="admin-table-header-cell">Kontak</th>
+                    <th className="admin-table-header-cell">Status</th>
+                    <th className="admin-table-header-cell">Registrasi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredParticipants.map((participant) => (
+                    <tr
+                      key={participant.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="admin-table-cell">
+                        <div className="font-medium text-gray-900">
+                          {participant.nama}
+                        </div>
+                      </td>
+                      <td className="admin-table-cell text-gray-600">
+                        {participant.kelas?.nama || "Unknown"}
+                      </td>
+                      <td className="admin-table-cell text-gray-600">
+                        {participant.cabang.nama}
+                      </td>
+                      <td className="admin-table-cell">
+                        <div className="text-gray-900">{participant.email}</div>
+                        <div className="text-gray-500 text-sm">
+                          {participant.nowa}
+                        </div>
+                      </td>
+                      <td className="admin-table-cell">
+                        {getStatusBadge(
+                          participant.status,
+                          participant.updateAt
+                        )}
+                      </td>
+                      <td className="admin-table-cell">
+                        <div className="text-gray-900">
+                          {new Date(participant.createAt).toLocaleDateString()}
+                        </div>
+                        {participant.updateAt && (
+                          <div className="text-green-600 text-sm flex items-center mt-1">
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Re-registered
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
