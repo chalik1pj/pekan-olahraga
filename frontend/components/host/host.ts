@@ -1,3 +1,3 @@
 export const config = {
-  HOST: "http://localhost:5000",
+  HOST: "http://0.0.0.0:5000",
 };

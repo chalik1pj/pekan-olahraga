@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { jwtDecode } from "jwt-decode";
+import { config } from "@/components/host/host";
 
 type Participant = {
   id: number;
@@ -90,7 +91,7 @@ export default function AdminDashboardPage() {
     try {
       // Fetch counts
       const countsResponse = await axios.get(
-        "http://localhost:5000/api/admin/register?status=count"
+        `${config.HOST}/api/admin/register?status=count`
       );
       if (countsResponse.data.status === "success") {
         setCounts(countsResponse.data.data.count);
@@ -98,7 +99,7 @@ export default function AdminDashboardPage() {
 
       // Fetch pending registrations
       const pendingResponse = await axios.get(
-        "http://localhost:5000/api/admin/register?status=pending"
+        `${config.HOST}/api/admin/register?status=pending`
       );
       if (pendingResponse.data.status === "success") {
         setPendingRegistrations(pendingResponse.data.data.pending);
@@ -106,7 +107,7 @@ export default function AdminDashboardPage() {
 
       // Fetch approved registrations
       const approvedResponse = await axios.get(
-        "http://localhost:5000/api/admin/register?status=approved"
+        `${config.HOST}/api/admin/register?status=approved`
       );
       if (approvedResponse.data.status === "success") {
         setApprovedRegistrations(approvedResponse.data.data.approved);
@@ -114,7 +115,7 @@ export default function AdminDashboardPage() {
 
       // Fetch re-registered count
       const reRegisteredResponse = await axios.get(
-        "http://localhost:5000/api/admin/registrasi-ulang?status=count"
+        `${config.HOST}/api/admin/registrasi-ulang?status=count`
       );
       if (reRegisteredResponse.data.status === "success") {
         setReRegisteredCount(reRegisteredResponse.data.data.participant);
@@ -132,7 +133,7 @@ export default function AdminDashboardPage() {
     try {
       console.log(`Approving registration with ID: ${id}`);
       const response = await axios.patch(
-        `http://localhost:5000/api/admin/registration/${id}/APPROVED`
+        `${config.HOST}/api/admin/registration/${id}/APPROVED`
       );
 
       console.log("Approval response:", response.data);
@@ -180,7 +181,7 @@ export default function AdminDashboardPage() {
     try {
       console.log(`Rejecting registration with ID: ${id}`);
       const response = await axios.patch(
-        `http://localhost:5000/api/admin/registration/${id}/REJECT`
+        `${config.HOST}/api/admin/registration/${id}/REJECT`
       );
 
       console.log("Rejection response:", response.data);
